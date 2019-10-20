@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Snake Game</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<style>
+			#screenWrapper {
+				width: 250px;
+				height: 350px;
+				border: 5px solid;
+				position: relative;
+				//overflow: hidden;
+			}
+
+			#snake {
+				width: 5px;
+				height: 5px;
+				background: red;
+				position: relative;
+				top: 150px;
+				//left: 250px
+			}
+
+		</style>
+	</head>
+	<body>
+		<h1>Snake Game</h1>
+		<div id="screenWrapper">
+			<div id="dot"></div>
+			<div id="snake"></div>
+		</div>
+		
+		<script>
+			var moveLeft = 0;
+			var moveRight = 0;
+			var positionHorizontal = 0;
+			var positionVertical = 0;
+			var leftInterval, upInterval, rightInterval, downInterval;
+			var snake = $('#snake');
+			var currentDirection = 'horizontal', previousDirection = 'horizontal';
+			var posX, posY;
+			
+			$(document).ready(function(){
+				createDot();
+				
+				$(document).keydown(function(e) {
+					clearAllInterval();
+					if(currentDirection !== previousDirection) {
+						//changeDirection();
+						if(e.which === 37 || e.which === 39) {
+							previousDirection = 'horizontal';
+						}
+						if(e.which === 38 || e.which === 40) {
+							previousDirection = 'vertical';
+						}
+					}
+					if(e.which == 37) { // left arrow key
+						setTimeout(function(){ currentDirection = 'horizontal'; }, 100);
+						leftInterval = setInterval(moveLeftFun, 100);
+					}
+					if(e.which == 38) {	// up arrow key
+						setTimeout(function(){ currentDirection = 'vertical'; }, 100);
+						upInterval = setInterval(moveUpFun, 100);
+					}
+					if(e.which == 39) { // right arrow key
+						setTimeout(function(){ currentDirection = 'horizontal'; }, 100);
+						rightInterval = setInterval(moveRightFun, 100);
+					}
+					if(e.which == 40) { // down arrow key
+						setTimeout(function(){ currentDirection = 'vertical'; }, 100);
+						downInterval = setInterval(moveDownFun, 100);
+					}
+				});
+				
+				function check() {
+					minX = parseInt(posX) - 10;
+					maxX = parseInt(posX) + 10;
+					minY = parseInt(posY) - 10;
+					maxY = parseInt(posY) + 10;
+					if((snake.position().left > minX && snake.position().left < maxX ) && (snake.position().top > minY && snake.position().top < maxY)) {
+						var a = snake.width() + 5;
+						$('.dot').remove();
+						createDot();
+						snake.width(a).height(a);
+					}
+				}
+				
+				function createDot() {
+					var dotSize = ((Math.random()*1) + 5).toFixed();
+					dotElement = $('<div class="dot"/>').css({'width':dotSize+'px', 'height':dotSize+'px', 'background-color': 'green'});
+					posX = (Math.random() * ($('#screenWrapper').width() - dotSize)).toFixed();
+					posY = (Math.random() * ($('#screenWrapper').height() - dotSize)).toFixed();
+					dotElement.css({
+						'width': '5px',
+						'height': '5px',
+						'background': 'green',
+						'border': '2px solid green',
+						'border-radius': '7px',
+						'left':posX+'px',
+						'top':posY+'px',
+						'position': 'absolute'
+					}).appendTo( '#screenWrapper' );
+				}
+				
+				function clearAllInterval() {
+					clearInterval(leftInterval);
+					clearInterval(upInterval);
+					clearInterval(rightInterval);
+					clearInterval(downInterval);
+				}
+				
+				function moveLeftFun() {
+					//snake.width(snake.height()).height(snake.width());
+					var leftBorder = -10;
+					positionHorizontal = snake.position().left;
+					positionHorizontal -= 10;
+					if(positionHorizontal > leftBorder) {
+						snake.css({"left":positionHorizontal+"px"});
+						check();
+					} else {
+						clearInterval(leftInterval);
+						alert("Game ended !!!");						
+					}
+				}
+				
+				function moveUpFun() {
+					//snake.width(snake.height()).height(snake.width());
+					var topBorder = -15 //-55 + snake.height();
+					positionVertical = snake.position().top;
+					positionVertical -= 20;
+					if(positionVertical >= topBorder) {
+						snake.css({"top":positionVertical+"px"});
+						check();
+					} else {
+						clearInterval(upInterval);
+						alert("Game ended !!!");						
+					}
+				}
+
+				function moveRightFun() {
+					//snake.width(snake.height()).height(snake.width());
+					var rightBorder = 255 - snake.width();
+					positionHorizontal = snake.position().left;
+					positionHorizontal += 10;
+					if(positionHorizontal < rightBorder) {
+						snake.css({"left":positionHorizontal+"px"});
+						check();
+					} else {
+						clearInterval(rightInterval);
+						alert("Game ended !!!")
+					}
+				}
+				
+				function moveDownFun() {
+					//snake.width(snake.height()).height(snake.width());
+					var bottomBorder = 355 - snake.height();
+					positionVertical = snake.position().top;
+					positionVertical += 10;
+					if(positionVertical < bottomBorder) {
+						snake.css({"top":positionVertical+"px"});
+						check();
+					} else {
+						clearInterval(downInterval);
+						alert("Game ended !!!");						
+					}
+				}
+				
+				function changeDirection() {
+					var snakeWidth = snake.width();
+					var snakeHeight = snake.height();
+					snake.width(snake.height()).height(snake.width());
+				}
+			});
+		</script>
+	</body>
+</html>
